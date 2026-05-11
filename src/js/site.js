@@ -102,7 +102,7 @@ export const contactInfo = {
   title: '把情况说清楚，再帮你一起筛',
   desc: '适合已经看过院校专业和费用，但还拿不准学校、专业、路径或拿证节奏的人。',
   wechat: 'mystjy66',
-  qrCode: '/wechat-qr.png',
+  qrCode: `${import.meta.env.BASE_URL}wechat-qr.png`,
   tips: [
     '你在四川哪个城市，是否已经有目标学校或专业',
     '你的预算、学习时间，以及想走大自考还是小自考',

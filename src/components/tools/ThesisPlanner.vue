@@ -52,7 +52,7 @@
 
         <el-form-item label="申请条件核对">
           <el-checkbox-group v-model="form.readyItems" class="thesis-ready-group">
-            <el-checkbox v-for="item in readyOptions" :key="item.value" :label="item.value">
+            <el-checkbox v-for="item in readyOptions" :key="item.value" :value="item.value">
               {{ item.label }}
             </el-checkbox>
           </el-checkbox-group>
