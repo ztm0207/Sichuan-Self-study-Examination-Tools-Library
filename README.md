@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 # 四川小自考工具库
 
 面向四川自考新手的信息库和工具箱，用来集中查看学校、专业、费用、大小自考区别、拿证时间、复习计划、论文和毕业学位事项。
@@ -47,7 +46,6 @@
 npm install
 npm run dev
 ```
-=======
 # Sichuan-Self-study-Examination-Tools-Library
 四川小自考工具库
->>>>>>> 5269e5a02508fd3bced0bb7d2dd7d050160a1362
+
