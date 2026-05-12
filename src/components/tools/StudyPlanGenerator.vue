@@ -10,9 +10,9 @@
 
           <el-form-item label="报考层次">
             <el-radio-group v-model="form.offeringLevel" class="study-choice-group study-level-group">
-              <el-radio-button label="all">全部</el-radio-button>
-              <el-radio-button label="专科">专科</el-radio-button>
-              <el-radio-button label="专升本">专升本</el-radio-button>
+              <el-radio-button value="all">全部</el-radio-button>
+              <el-radio-button value="专科">专科</el-radio-button>
+              <el-radio-button value="专升本">专升本</el-radio-button>
             </el-radio-group>
           </el-form-item>
 
@@ -41,8 +41,8 @@
 
           <el-form-item label="本次考试类型">
             <el-radio-group v-model="form.examKind" class="study-choice-group">
-              <el-radio-button label="unified">统考</el-radio-button>
-              <el-radio-button label="province">省考</el-radio-button>
+              <el-radio-button value="unified">统考</el-radio-button>
+              <el-radio-button value="province">省考</el-radio-button>
             </el-radio-group>
           </el-form-item>
 
@@ -147,9 +147,9 @@
 
           <el-form-item label="计划节奏">
             <el-radio-group v-model="form.pace" class="study-pace-group">
-              <el-radio-button label="steady">稳妥</el-radio-button>
-              <el-radio-button label="normal">正常</el-radio-button>
-              <el-radio-button label="sprint">冲刺</el-radio-button>
+              <el-radio-button value="steady">稳妥</el-radio-button>
+              <el-radio-button value="normal">正常</el-radio-button>
+              <el-radio-button value="sprint">冲刺</el-radio-button>
             </el-radio-group>
           </el-form-item>
         </div>

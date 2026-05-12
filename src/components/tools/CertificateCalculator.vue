@@ -10,22 +10,22 @@
           <div class="certificate-form-grid foundation-grid">
             <el-form-item label="自考路径">
               <el-radio-group v-model="form.path" class="certificate-choice-group">
-                <el-radio-button label="applied">小自考</el-radio-button>
-                <el-radio-button label="social">大自考</el-radio-button>
+                <el-radio-button value="applied">小自考</el-radio-button>
+                <el-radio-button value="social">大自考</el-radio-button>
               </el-radio-group>
             </el-form-item>
 
             <el-form-item label="报考层次">
               <el-radio-group v-model="form.level" class="certificate-choice-group">
-                <el-radio-button label="junior">专科</el-radio-button>
-                <el-radio-button label="undergraduate">专升本</el-radio-button>
+                <el-radio-button value="junior">专科</el-radio-button>
+                <el-radio-button value="undergraduate">专升本</el-radio-button>
               </el-radio-group>
             </el-form-item>
 
             <el-form-item v-if="form.level === 'undergraduate'" label="当前阶段">
               <el-radio-group v-model="form.currentStage" class="certificate-choice-group">
-                <el-radio-button label="course">考课程</el-radio-button>
-                <el-radio-button label="thesis">论文阶段</el-radio-button>
+                <el-radio-button value="course">考课程</el-radio-button>
+                <el-radio-button value="thesis">论文阶段</el-radio-button>
               </el-radio-group>
             </el-form-item>
           </div>
