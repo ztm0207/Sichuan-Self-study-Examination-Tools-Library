@@ -2,6 +2,7 @@ import { createRouter, createWebHashHistory } from 'vue-router'
 
 const routes = [
   { path: '/', name: 'home', component: () => import('../views/Home.vue'), meta: { title: '首页' } },
+  { path: '/route-test', name: 'route-test', component: () => import('../views/RouteTest.vue'), meta: { title: '路线测评' } },
   { path: '/schools', name: 'schools', component: () => import('../views/Schools.vue'), meta: { title: '查学校' } },
   { path: '/schools/:id', name: 'school-detail', component: () => import('../views/SchoolDetail.vue'), meta: { title: '学校详情' } },
   { path: '/majors', name: 'majors', component: () => import('../views/Majors.vue'), meta: { title: '查专业' } },

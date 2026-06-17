@@ -1,5 +1,6 @@
 export const navItems = [
   { label: '首页', path: '/' },
+  { label: '路线测评', path: '/route-test' },
   { label: '查学校', path: '/schools' },
   { label: '查专业', path: '/majors' },
   { label: '查费用', path: '/prices' },
@@ -10,16 +11,26 @@ export const navItems = [
 ]
 
 export const homeHero = {
-  badge: '四川自考路径工具',
-  title: '四川自考怎么选，一页先看清',
-  titleLines: ['四川自考怎么选', '一页先看清'],
-  subtitle: '先查学校、专业和费用，再看大小自考、拿证时间、复习计划和论文。',
+  badge: '四川自考路线测评',
+  title: '四川自考不知道怎么选，先测一下',
+  titleLines: ['四川自考不知道怎么选', '先测一下'],
+  subtitle: '先用 30 秒筛一遍路线，再查学校、专业、费用、拿证时间和复习计划。',
   note: '本站用于信息整理和辅助决策，学校、专业、费用及毕业要求请以官方最新通知为准。',
-  primaryAction: { label: '先查学校', path: '/schools' },
-  secondaryAction: { label: '核对费用', path: '/prices' },
+  primaryAction: { label: '测我的自考路线', path: '/route-test' },
+  secondaryAction: { label: '先查学校', path: '/schools' },
 }
 
 export const homeDirectorySections = [
+  {
+    title: '路线测评',
+    path: '/route-test',
+    intro: '先回答几个问题，初步判断你适合稳妥通关、快速拿证、低预算自学还是职业提升路线。',
+    items: [
+      { label: '7 个问题初筛', path: '/route-test' },
+      { label: '5 类路线结果', path: '/route-test' },
+      { label: '老师确认清单', path: '/route-test' },
+    ],
+  },
   {
     title: '查学校',
     path: '/schools',

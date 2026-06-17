@@ -129,6 +129,7 @@
 
 <script setup>
 import {
+  Aim,
   DataAnalysis,
   EditPen,
   Money,
@@ -141,13 +142,13 @@ import { homeDirectorySections, homeHero } from '../js/site'
 import SectionTitle from '../components/SectionTitle.vue'
 import ContactCard from '../components/ContactCard.vue'
 
-const homeHeroPoints = ['院校专业先核对', '价格和论文费分开看', '统考省考按学校查']
+const homeHeroPoints = ['先测路线方向', '院校专业再核对', '费用和论文费分开看']
 
-const heroRouteSteps = ['查学校与专业', '核价格和论文费用', '排考试与论文节奏']
+const heroRouteSteps = ['测适合哪条路线', '查学校与专业', '核费用与考试节奏']
 
 const heroQuickLinks = [
-  { index: '01', label: '查院校', path: '/schools' },
-  { index: '02', label: '查专业', path: '/majors' },
+  { index: '01', label: '路线测评', path: '/route-test' },
+  { index: '02', label: '查院校', path: '/schools' },
   { index: '03', label: '查费用', path: '/prices' },
 ]
 
@@ -172,5 +173,5 @@ const homeAdviceCards = [
   },
 ]
 
-const directoryIcons = [School, Reading, Money, Switch, Timer, DataAnalysis, EditPen]
+const directoryIcons = [Aim, School, Reading, Money, Switch, Timer, DataAnalysis, EditPen]
 </script>
