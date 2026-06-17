@@ -226,9 +226,9 @@
 
       <ContactCard
         kicker="轻咨询入口"
-        title="路线看完还是拿不准，就找老师轻轻核一下"
-        desc="不用一上来就报名。可以先把你的学历、目标专业、预算和测评结果发过去，让老师帮你确认当前能选哪些学校、专业、费用和报名方式。"
-        :tips="contactTips"
+        title="不知道该准备哪些资料，可以先说你的阶段"
+        desc="适合已经确定专业或正在备考，但不知道复习资料、论文材料、毕业学位材料怎么整理的人。"
+        :tips="lightConsultTips"
       />
     </div>
   </section>
@@ -383,11 +383,11 @@ const hasResult = ref(false)
 const routeQuestionCount = computed(() => questions.length)
 const planner = computed(() => createPlannerResult(form))
 
-const contactTips = computed(() => [
-  `我的测评画像是：${planner.value.profile.title}`,
-  `我想报：${planner.value.profile.targetLevel}`,
-  '帮我确认这三条路线里，当前哪些学校和专业还能报',
-])
+const lightConsultTips = [
+  '你现在处在备考、论文、毕业还是学位阶段',
+  '你的学校、专业、层次和当前剩余事项',
+  '你最想要的是复习资料、时间规划还是材料清单',
+]
 
 function generateResult() {
   normalizeNumberQuestions()
