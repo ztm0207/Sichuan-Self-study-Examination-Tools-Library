@@ -214,12 +214,6 @@
           </ul>
         </el-card>
 
-        <ContactCard
-          kicker="结果确认"
-          title="学校、专业、费用拿不准，再找四川自考老师确认"
-          desc="可以把你的测评结果发给老师，让老师帮你核对当前能选的学校、专业、费用和报名方式。"
-          :tips="contactTips"
-        />
       </template>
 
       <el-card class="route-note-card" shadow="never">
@@ -229,6 +223,13 @@
           最后涉及学校是否还能报、专业计划有没有调整、费用和论文要求怎么走，还是要以官方通知和学校当期要求为准。
         </p>
       </el-card>
+
+      <ContactCard
+        kicker="轻咨询入口"
+        title="路线看完还是拿不准，就找老师轻轻核一下"
+        desc="不用一上来就报名。可以先把你的学历、目标专业、预算和测评结果发过去，让老师帮你确认当前能选哪些学校、专业、费用和报名方式。"
+        :tips="contactTips"
+      />
     </div>
   </section>
 </template>
