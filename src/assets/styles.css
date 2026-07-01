@@ -3795,13 +3795,14 @@ a.school-offering-title {
   bottom: 20px;
   z-index: 80;
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 118px));
-  gap: 8px;
-  padding: 8px;
-  background: rgba(255, 255, 255, 0.94);
-  border: 1px solid #bfdbfe;
-  border-radius: 8px;
-  box-shadow: 0 16px 42px rgba(15, 23, 42, 0.18);
+  grid-template-columns: minmax(0, 136px) minmax(0, 122px);
+  gap: 6px;
+  padding: 6px;
+  background: rgba(255, 255, 255, 0.96);
+  border: 1px solid #dbeafe;
+  border-radius: 999px;
+  box-shadow: 0 12px 34px rgba(15, 23, 42, 0.16);
+  backdrop-filter: blur(12px);
 }
 
 .site-floating-actions a,
@@ -3809,24 +3810,58 @@ a.school-offering-title {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  min-height: 40px;
-  padding: 0 12px;
-  color: #1d4ed8;
-  background: #eff6ff;
-  border: 1px solid #dbeafe;
-  border-radius: 8px;
-  font-size: 14px;
+  gap: 7px;
+  min-height: 42px;
+  padding: 0 14px;
+  color: #0f766e;
+  background: #ffffff;
+  border: 1px solid #bbf7d0;
+  border-radius: 999px;
+  font-size: 13px;
   font-weight: 900;
   text-align: center;
   text-decoration: none;
   line-height: 1.25;
   cursor: pointer;
+  white-space: nowrap;
+  transition: transform 0.16s ease, box-shadow 0.16s ease, border-color 0.16s ease;
+}
+
+.site-floating-actions a::before,
+.site-floating-actions button::before {
+  display: inline-grid;
+  place-items: center;
+  flex: 0 0 18px;
+  width: 18px;
+  height: 18px;
+  border-radius: 999px;
+  font-size: 12px;
+  line-height: 1;
+}
+
+.site-floating-actions a::before {
+  content: "测";
+  color: #2563eb;
+  background: #ffffff;
+}
+
+.site-floating-actions button::before {
+  content: "核";
+  color: #ffffff;
+  background: #0f766e;
 }
 
 .site-floating-actions a:first-child {
   color: #ffffff;
   background: #2563eb;
   border-color: #2563eb;
+  box-shadow: 0 8px 18px rgba(37, 99, 235, 0.22);
+}
+
+.site-floating-actions a:hover,
+.site-floating-actions button:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 8px 20px rgba(15, 23, 42, 0.14);
 }
 
 @media (max-width: 960px) {
@@ -3892,6 +3927,7 @@ a.school-offering-title {
     left: 12px;
     bottom: 12px;
     grid-template-columns: repeat(2, minmax(0, 1fr));
+    border-radius: 16px;
   }
 
   .mobile-menu-btn {
