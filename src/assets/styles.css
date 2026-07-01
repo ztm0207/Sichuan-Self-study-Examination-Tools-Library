@@ -3841,8 +3841,8 @@ a.school-offering-title {
 
 .site-floating-actions a::before {
   content: "测";
-  color: #2563eb;
-  background: #ffffff;
+  color: #ffffff;
+  background: #2563eb;
 }
 
 .site-floating-actions button::before {
@@ -3852,16 +3852,28 @@ a.school-offering-title {
 }
 
 .site-floating-actions a:first-child {
-  color: #ffffff;
-  background: #2563eb;
-  border-color: #2563eb;
-  box-shadow: 0 8px 18px rgba(37, 99, 235, 0.22);
+  color: #1d4ed8;
+  background: #ffffff;
+  border-color: #bfdbfe;
+  box-shadow: none;
 }
 
 .site-floating-actions a:hover,
 .site-floating-actions button:hover {
   transform: translateY(-1px);
   box-shadow: 0 8px 20px rgba(15, 23, 42, 0.14);
+}
+
+.site-floating-actions a:hover {
+  color: #1d4ed8;
+  background: #eff6ff;
+  border-color: #93c5fd;
+}
+
+.site-floating-actions button:hover {
+  color: #0f766e;
+  background: #ecfdf5;
+  border-color: #86efac;
 }
 
 @media (max-width: 960px) {
