@@ -3804,7 +3804,8 @@ a.school-offering-title {
   box-shadow: 0 16px 42px rgba(15, 23, 42, 0.18);
 }
 
-.site-floating-actions a {
+.site-floating-actions a,
+.site-floating-actions button {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -3819,6 +3820,7 @@ a.school-offering-title {
   text-align: center;
   text-decoration: none;
   line-height: 1.25;
+  cursor: pointer;
 }
 
 .site-floating-actions a:first-child {
