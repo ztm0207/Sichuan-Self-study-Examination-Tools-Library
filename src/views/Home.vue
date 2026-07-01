@@ -51,6 +51,30 @@
       </div>
     </section>
 
+    <section class="section official-home-section">
+      <div class="container">
+        <SectionTitle
+          eyebrow="当前节点"
+          title="最近这些官方信息，先看一眼"
+          desc="报名、复习、论文、毕业这些东西时间一过就麻烦。这里放的是当前最容易影响判断的节点。"
+        />
+        <div class="official-home-grid">
+          <a
+            v-for="item in officialUpdateCards"
+            :key="item.title"
+            :href="item.link"
+            class="official-home-card"
+            target="_blank"
+            rel="noopener"
+          >
+            <strong>{{ item.title }}</strong>
+            <p>{{ item.desc }}</p>
+            <span>{{ item.linkText }}</span>
+          </a>
+        </div>
+      </div>
+    </section>
+
     <section class="section directory-section">
       <div class="container">
         <div class="directory-heading">
@@ -139,6 +163,7 @@ import {
   Timer,
 } from '@element-plus/icons-vue'
 import { homeDirectorySections, homeHero } from '../js/site'
+import { officialUpdateCards } from '../js/officialUpdates'
 import SectionTitle from '../components/SectionTitle.vue'
 import ContactCard from '../components/ContactCard.vue'
 

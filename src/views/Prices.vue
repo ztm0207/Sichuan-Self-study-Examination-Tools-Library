@@ -71,6 +71,7 @@
 import { computed, ref, watch } from 'vue'
 import PageHero from '../components/PageHero.vue'
 import { schoolMajorLevels, schoolMajorOfferings } from '../js/schools'
+import { getMajorPlanById } from '../js/sichuanMajorPlans'
 
 const keyword = ref('')
 const level = ref('')
@@ -109,7 +110,7 @@ watch([keyword, level, priceStatus], () => {
 })
 
 function majorDetailPath(item) {
-  return `/majors/${item.planId || item.id}`
+  return `/majors/${getMajorPlanById(item.planId) ? item.planId : item.id}`
 }
 
 function hasCoursePlan(item) {

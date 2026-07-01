@@ -12,6 +12,16 @@
         :points="['4/10月统考', '1/7月省考', '毕业申请窗口']"
       />
 
+      <el-card class="inline-tip-card official-update-card" shadow="never">
+        <div>
+          <h3>2026年10月统考课表已发布</h3>
+          <p>拿证时间不能只按“4月、10月都有考试”粗算，还要看你剩余课程在当次课表里有没有安排、有没有同场冲突。正式报考前先核2026年10月课表。</p>
+        </div>
+        <a :href="officialUpdateLinks.octoberSchedule" target="_blank" rel="noopener">
+          <el-button type="primary" round>查看10月课表</el-button>
+        </a>
+      </el-card>
+
       <CertificateCalculator />
 
       <el-card class="inline-tip-card mt-section" shadow="never">
@@ -38,4 +48,5 @@
 import PageHero from '../components/PageHero.vue'
 import ContactCard from '../components/ContactCard.vue'
 import CertificateCalculator from '../components/tools/CertificateCalculator.vue'
+import { officialUpdateLinks } from '../js/officialUpdates'
 </script>

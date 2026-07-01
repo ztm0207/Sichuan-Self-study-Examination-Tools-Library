@@ -12,6 +12,16 @@
         :points="['小自考本科', '选题提纲', '答辩归档']"
       />
 
+      <el-card class="inline-tip-card official-update-card" shadow="never">
+        <div>
+          <h3>2026年下半年论文/实践报考已经截止</h3>
+          <p>本次实践性环节考核和毕业论文（设计）答辩报考时间为6月22日9:00至6月27日17:00。已报考的同学看主考学校官网通知，没报上的先准备材料，等下一批。</p>
+        </div>
+        <a :href="officialUpdateLinks.practiceThesis2026H2" target="_blank" rel="noopener">
+          <el-button type="primary" round>查看报考通告</el-button>
+        </a>
+      </el-card>
+
       <ThesisPlanner />
 
       <el-card class="thesis-hero-card" shadow="never">
@@ -142,4 +152,5 @@ import {
 import SectionTitle from '../components/SectionTitle.vue'
 import PageHero from '../components/PageHero.vue'
 import ThesisPlanner from '../components/tools/ThesisPlanner.vue'
+import { officialUpdateLinks } from '../js/officialUpdates'
 </script>

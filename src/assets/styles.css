@@ -868,6 +868,59 @@ select {
   font-weight: 800;
 }
 
+.official-home-section {
+  background: #f8fafc;
+}
+
+.official-home-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.official-home-card {
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+  gap: 10px;
+  min-height: 210px;
+  padding: 16px;
+  color: inherit;
+  text-decoration: none;
+  background: #ffffff;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+}
+
+.official-home-card:hover {
+  transform: translateY(-2px);
+  border-color: #bfdbfe;
+  box-shadow: var(--shadow);
+}
+
+.official-home-card strong {
+  color: #0f172a;
+  font-size: 17px;
+  line-height: 1.35;
+}
+
+.official-home-card p {
+  margin: 0;
+  color: #475569;
+  line-height: 1.65;
+}
+
+.official-home-card span {
+  width: fit-content;
+  color: #1d4ed8;
+  background: #eff6ff;
+  border: 1px solid #dbeafe;
+  border-radius: 8px;
+  padding: 6px 10px;
+  font-size: 13px;
+  font-weight: 900;
+}
+
 .tag-list {
   display: flex;
   flex-wrap: wrap;
@@ -1744,6 +1797,48 @@ a.school-offering-title {
   line-height: 1.35;
 }
 
+.major-source-status {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 10px;
+  margin-top: 12px;
+}
+
+.major-source-status-item {
+  display: grid;
+  gap: 5px;
+  padding: 10px;
+  background: #f8fafc;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+}
+
+.major-source-status-item span {
+  color: #64748b;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.major-source-status-item strong {
+  color: #0f172a;
+  font-size: 14px;
+}
+
+.major-source-status-item.is-success {
+  background: #f0fdf4;
+  border-color: #bbf7d0;
+}
+
+.major-source-status-item.is-warning {
+  background: #fffbeb;
+  border-color: #fde68a;
+}
+
+.major-source-status-item.is-danger {
+  background: #fef2f2;
+  border-color: #fecaca;
+}
+
 .course-details {
   margin-top: 14px;
   border-top: 1px solid var(--line);
@@ -2546,11 +2641,48 @@ a.school-offering-title {
 }
 
 .planner-route-section ul,
+.route-policy-card ul,
 .route-next-card ul {
   display: grid;
   gap: 7px;
   margin: 0;
   padding-left: 18px;
+}
+
+.route-policy-card {
+  margin-bottom: 18px;
+  border: 1px solid #fed7aa;
+  border-radius: 8px;
+  background: #fff7ed;
+}
+
+.route-policy-card .el-card__body {
+  display: grid;
+  grid-template-columns: minmax(240px, 0.52fr) minmax(0, 1fr);
+  gap: 18px;
+  align-items: start;
+  padding: 18px;
+}
+
+.route-policy-card div {
+  display: grid;
+  gap: 8px;
+}
+
+.route-policy-card span {
+  width: fit-content;
+  color: #c2410c;
+  background: #ffedd5;
+  border: 1px solid #fed7aa;
+  border-radius: 8px;
+  padding: 5px 9px;
+  font-size: 13px;
+  font-weight: 900;
+}
+
+.route-policy-card h3 {
+  margin: 0;
+  color: #0f172a;
 }
 
 .route-next-card {
@@ -3591,6 +3723,7 @@ a.school-offering-title {
 
   .card-grid,
   .directory-grid,
+  .official-home-grid,
   .topic-grid,
   .major-grid,
   .resource-grid,
@@ -3598,8 +3731,13 @@ a.school-offering-title {
   .course-split-grid,
   .certificate-form-grid.foundation-grid,
   .certificate-result-grid,
+  .major-source-status,
   .school-detail-stats {
     grid-template-columns: repeat(2, 1fr);
+  }
+
+  .official-home-card {
+    min-height: auto;
   }
 
   .detail-aside {
@@ -3662,6 +3800,7 @@ a.school-offering-title {
 
   .card-grid,
   .directory-grid,
+  .official-home-grid,
   .topic-grid,
   .major-grid,
   .resource-grid,
@@ -3672,6 +3811,7 @@ a.school-offering-title {
   .difficulty-facts,
   .school-difficulty-card .difficulty-advice-list,
   .school-offering-fees,
+  .major-source-status,
   .school-detail-stats,
   .info-grid,
   .footer-grid {
@@ -5155,6 +5295,11 @@ a.school-offering-title {
     justify-self: start;
   }
 
+  .inline-tip-card .el-card__body > a,
+  .inline-tip-card .el-card__body > a .el-button {
+    width: 100%;
+  }
+
   .resource-guide-steps {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
@@ -5204,6 +5349,7 @@ a.school-offering-title {
   .thesis-breakdown-grid,
   .route-result-grid,
   .major-guide-card .el-card__body,
+  .route-policy-card .el-card__body,
   .route-next-card .el-card__body,
   .mini-columns {
     grid-template-columns: 1fr;
@@ -5211,6 +5357,44 @@ a.school-offering-title {
 
   .major-guide-card .el-button {
     width: 100%;
+  }
+
+  .filter-bar,
+  .filter-bar.wrap,
+  .filter-bar.wrap > *,
+  .filter-bar .el-input,
+  .filter-bar .el-select,
+  .major-quick-filter,
+  .major-quick-filter .el-checkbox-group {
+    min-width: 0;
+    width: 100%;
+  }
+
+  .major-quick-filter {
+    align-items: stretch;
+  }
+
+  .major-quick-filter .el-checkbox-group {
+    display: grid;
+    grid-template-columns: 1fr;
+  }
+
+  .major-quick-filter .el-checkbox-button,
+  .major-quick-filter .el-checkbox-button__inner {
+    width: 100%;
+  }
+
+  .list-pagination {
+    flex-wrap: wrap;
+    gap: 8px;
+    overflow: hidden;
+  }
+
+  .list-pagination .el-pagination__total {
+    flex-basis: 100%;
+    order: 2;
+    margin-right: 0;
+    text-align: center;
   }
 
   .process-anchor-nav {

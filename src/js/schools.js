@@ -1,6 +1,7 @@
 import { fillMissingOfferingCourses } from './missingCoursePlans.js'
 import { currentAppliedSchoolNames, currentAppliedSchoolSupplements, currentSchoolMajorOverrides } from './currentSchoolMajorOverrides.js'
 import { officialMajorSupplementSource, officialMajorSupplements } from './officialMajorSupplements.js'
+import { appliedMajorPlans } from './sichuanMajorPlans.js'
 
 export const schools = [
   {
@@ -110836,8 +110837,22 @@ const knownCurrentAppliedMajorCodes = {
   '专升本|旅游管理': '120901K',
 }
 
+const knownCurrentAppliedMajorPlanIds = {
+  '专升本|金融学': 'applied-020301K',
+  '专升本|旅游管理': 'applied-120901K',
+}
+
 function getKnownCurrentAppliedMajorCode(level, majorName) {
   return knownCurrentAppliedMajorCodes[`${normalizeSchoolMajorText(level)}|${normalizeSchoolMajorText(majorName)}`] || ''
+}
+
+function getKnownCurrentAppliedMajorPlanId(level, majorName) {
+  return knownCurrentAppliedMajorPlanIds[`${normalizeSchoolMajorText(level)}|${normalizeSchoolMajorText(majorName)}`] || ''
+}
+
+function getKnownCurrentAppliedMajorPlan(level, majorName) {
+  const planId = getKnownCurrentAppliedMajorPlanId(level, majorName)
+  return planId ? appliedMajorPlans.find((item) => item.id === planId) : null
 }
 
 officialMajorSupplements.forEach(([schoolName, level, majorName], index) => {
@@ -110864,6 +110879,7 @@ officialMajorSupplements.forEach(([schoolName, level, majorName], index) => {
 
   const unifiedCourses = template ? cloneSupplementCourses(template.unifiedCourses, 'unified', supplementId) : []
   const schoolExamCourses = template ? cloneSupplementCourses(template.schoolExamCourses, 'province', supplementId) : []
+  const knownPlan = getKnownCurrentAppliedMajorPlan(level, majorName)
 
   const supplementOffering = {
     id: supplementId,
@@ -110872,9 +110888,9 @@ officialMajorSupplements.forEach(([schoolName, level, majorName], index) => {
     level,
     name: majorName,
     code: template?.code || getKnownCurrentAppliedMajorCode(level, majorName),
-    planId: template?.planId || '',
+    planId: template?.planId || getKnownCurrentAppliedMajorPlanId(level, majorName),
     category: template?.category || '其他',
-    totalCredits: template?.totalCredits || 0,
+    totalCredits: template?.totalCredits || knownPlan?.totalCredits || 0,
     sourcePage: template?.sourcePage || '',
     price: priceText || '',
     priceText: priceText || '待核对',
@@ -110886,7 +110902,7 @@ officialMajorSupplements.forEach(([schoolName, level, majorName], index) => {
     schoolExamCourses,
     unifiedCourseCount: unifiedCourses.length,
     schoolExamCourseCount: schoolExamCourses.length,
-    totalText: template?.totalText || '课程计划等待更新',
+    totalText: template?.totalText || (knownPlan?.totalCredits ? `合计 ${knownPlan.totalCredits} 学分` : '课程计划等待更新'),
     optionalCourseGroup: template?.optionalCourseGroup || '',
     sourceNote: template
       ? `${officialMajorSupplementSource}补充；课程计划按同名同层次专业展示，费用以学校最新通知为准。`
@@ -110984,13 +111000,14 @@ function applyCurrentSchoolMajorOverrides() {
         : getUniformSchoolLevelValue(school.id, major.level, 'thesisPriceText')
       const unifiedCourses = template ? cloneSupplementCourses(template.unifiedCourses, 'unified', supplementId) : []
       const schoolExamCourses = template ? cloneSupplementCourses(template.schoolExamCourses, 'province', supplementId) : []
+      const knownPlan = getKnownCurrentAppliedMajorPlan(major.level, major.name)
       const mergedFields = {
         code: major.code || template?.code || getKnownCurrentAppliedMajorCode(major.level, major.name),
-        planId: major.planId || template?.planId || '',
+        planId: major.planId || template?.planId || getKnownCurrentAppliedMajorPlanId(major.level, major.name),
         category: template?.category || existingOffering?.category || '其他',
-        totalCredits: template?.totalCredits || existingOffering?.totalCredits || 0,
+        totalCredits: template?.totalCredits || knownPlan?.totalCredits || existingOffering?.totalCredits || 0,
         sourcePage: template?.sourcePage || existingOffering?.sourcePage || '',
-        totalText: template?.totalText || existingOffering?.totalText || '课程计划等待更新',
+        totalText: template?.totalText || (knownPlan?.totalCredits ? `合计 ${knownPlan.totalCredits} 学分` : existingOffering?.totalText) || '课程计划等待更新',
         optionalCourseGroup: template?.optionalCourseGroup || existingOffering?.optionalCourseGroup || '',
         sourceNote: template
           ? `${override.source}补充；课程计划按同名同层次专业展示，费用以学校最新通知为准。`
@@ -111067,10 +111084,31 @@ function recomputeSchoolStats(school) {
   school.schoolExamCourseCount = offerings.reduce((sum, item) => sum + (item.schoolExamCourseCount || 0), 0)
 }
 
+function syncOfferingPlanMetadata() {
+  const planById = new Map(appliedMajorPlans.map((plan) => [plan.id, plan]))
+
+  schoolMajorOfferings.forEach((offering) => {
+    const plan = planById.get(offering.planId)
+    if (!plan) return
+
+    offering.category = plan.category || offering.category
+    offering.sourcePage = offering.sourcePage || plan.sourcePage || ''
+    offering.optionalCourseGroup = offering.optionalCourseGroup || plan.optionalCourseGroup || ''
+
+    if (plan.totalCredits) {
+      offering.totalCredits = plan.totalCredits
+      offering.totalText = `合计 ${plan.totalCredits} 学分`
+    }
+  })
+
+  schools.forEach(recomputeSchoolStats)
+}
+
 applyCurrentAppliedSchools()
 applyCurrentSchoolMajorOverrides()
 
 fillMissingOfferingCourses(schoolMajorOfferings)
+syncOfferingPlanMetadata()
 
 export const schoolMajorOfferingsBySchoolId = schoolMajorOfferings.reduce((result, item) => {
   result[item.schoolId] ||= []
@@ -111094,7 +111132,7 @@ export const schoolMajorCategories = [
   "农业类"
 ]
 
-export const schoolMajorMap = {
+const rawSchoolMajorMap = {
   "school-01": [
     "applied-590206",
     "applied-520201",
@@ -111732,7 +111770,9 @@ export const schoolMajorMap = {
   ]
 }
 
-export const schoolMajorSourceMap = {
+export const schoolMajorMap = filterActiveSchoolRecordMap(rawSchoolMajorMap)
+
+const rawSchoolMajorSourceMap = {
   "school-01": [
     {
       "level": "专科",
@@ -112890,7 +112930,9 @@ export const schoolMajorSourceMap = {
   ]
 }
 
-export const schoolMajorUnmappedSourceMajors = {
+export const schoolMajorSourceMap = filterActiveSchoolRecordMap(rawSchoolMajorSourceMap)
+
+const rawSchoolMajorUnmappedSourceMajors = {
   "school-01": [
     {
       "level": "专科",
@@ -113235,6 +113277,13 @@ export const schoolMajorUnmappedSourceMajors = {
       "code": ""
     }
   ]
+}
+
+export const schoolMajorUnmappedSourceMajors = filterActiveSchoolRecordMap(rawSchoolMajorUnmappedSourceMajors)
+
+function filterActiveSchoolRecordMap(map) {
+  const activeSchoolIds = new Set(schools.map((school) => school.id))
+  return Object.fromEntries(Object.entries(map).filter(([schoolId]) => activeSchoolIds.has(schoolId)))
 }
 
 export const schoolMajorMapNote = "院校专业与费用已按 院校专业.json 整理。schoolMajorOfferings 以“院校-专业”为主，包含每个学校专业的助学价格、论文费用、统考课程和省考课程；同一学校同一层次的空白费用已按表格合并单元格口径向下补齐；仍无法确认的费用统一显示为“待核对”，专科论文费用显示为“专科通常不涉及”。"

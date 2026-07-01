@@ -12,6 +12,16 @@
         :points="['按专业带入课程', '识别课程强度', '生成阶段计划']"
       />
 
+      <el-card class="inline-tip-card official-update-card" shadow="never">
+        <div>
+          <h3>2026年10月统考课表已经发布</h3>
+          <p>四川省教育考试院已发布2026年10月（262次）考试课表、课程简表。生成复习计划前，建议先核对本次实际能报哪些课程，别只按4月课表安排。</p>
+        </div>
+        <a :href="officialUpdateLinks.octoberSchedule" target="_blank" rel="noopener">
+          <el-button type="primary" round>查看10月课表</el-button>
+        </a>
+      </el-card>
+
       <StudyPlanGenerator />
 
       <el-card class="inline-tip-card mt-section" shadow="never">
@@ -28,4 +38,5 @@
 <script setup>
 import PageHero from '../components/PageHero.vue'
 import StudyPlanGenerator from '../components/tools/StudyPlanGenerator.vue'
+import { officialUpdateLinks } from '../js/officialUpdates'
 </script>

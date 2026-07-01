@@ -24,6 +24,16 @@
         </RouterLink>
       </el-card>
 
+      <el-card class="inline-tip-card official-update-card" shadow="never">
+        <div>
+          <h3>选专业前，先核一下停考风险</h3>
+          <p>四川省教育考试院已发布停考15个专业相关通告，2025年10月1日起停考专业不再接受新生注册报名。看到冷门、调整或不确定专业，不要直接报，先核官方通告和学校当期招生范围。</p>
+        </div>
+        <a :href="officialUpdateLinks.stoppedMajors2025" target="_blank" rel="noopener">
+          <el-button type="primary" round>查看停考通告</el-button>
+        </a>
+      </el-card>
+
       <div class="filter-bar wrap">
         <el-input v-model="keyword" clearable placeholder="搜索专业或学校，例如：行政管理、四川大学、护理学" />
         <el-select v-model="level" placeholder="全部层次" clearable>
@@ -81,6 +91,7 @@
               <strong>{{ item.thesisPriceText }}</strong>
             </div>
             <div class="tag-list">
+              <el-tag v-if="isStoppedMajor(item)" type="danger" effect="dark" round>停考风险</el-tag>
               <el-tag v-if="item.category" effect="plain" round>{{ item.category }}</el-tag>
               <el-tag :type="getVerificationTone(item)" effect="plain" round>{{ getVerificationText(item) }}</el-tag>
               <el-tag v-if="item.totalCredits" effect="plain" round>{{ item.totalCredits }} 学分</el-tag>
@@ -114,7 +125,9 @@ import { computed, ref, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import PageHero from '../components/PageHero.vue'
 import { schoolMajorCategories, schoolMajorLevels, schoolMajorOfferings, schools } from '../js/schools'
+import { getMajorPlanById } from '../js/sichuanMajorPlans'
 import { analyzeMajorDifficulty } from '../js/majorDifficulty'
+import { isStoppedMajor, officialUpdateLinks } from '../js/officialUpdates'
 
 const route = useRoute()
 const keyword = ref(getQueryText(route.query.keyword))
@@ -145,7 +158,7 @@ const filteredOfferings = computed(() => {
     const matchCategory = category.value ? item.category === category.value : true
     const matchQuickFilters = quickFilters.value.every((filter) => matchesQuickFilter(item, filter))
     return matchKeyword && matchLevel && matchSchool && matchCategory && matchQuickFilters
-  })
+  }).sort((a, b) => Number(isStoppedMajor(a)) - Number(isStoppedMajor(b)))
 })
 
 const pagedOfferings = computed(() => {
@@ -169,7 +182,7 @@ watch(
 )
 
 function majorDetailPath(item) {
-  return `/majors/${item.planId || item.id}`
+  return `/majors/${getMajorPlanById(item.planId) ? item.planId : item.id}`
 }
 
 function hasCoursePlan(item) {

@@ -232,6 +232,7 @@ import { useRoute } from 'vue-router'
 import { analyzeMajorDifficulty } from '../js/majorDifficulty'
 import { courseRemarkClass, getCourseDisplayRemark, getPolicyNotes } from '../js/majorPolicyNotes'
 import { getSchoolById, getSchoolMajorOfferings } from '../js/schools'
+import { getMajorPlanById } from '../js/sichuanMajorPlans'
 
 const route = useRoute()
 const activeLevel = ref('')
@@ -278,7 +279,7 @@ function getVisibleItems(group) {
 }
 
 function majorDetailPath(item) {
-  return `/majors/${item.planId || item.id}`
+  return `/majors/${getMajorPlanById(item.planId) ? item.planId : item.id}`
 }
 
 function hasCoursePlan(item) {

@@ -23,6 +23,16 @@
         <RouterLink to="/process"><el-button type="primary" round>回到完整流程</el-button></RouterLink>
       </el-card>
 
+      <el-card class="inline-tip-card official-update-card" shadow="never">
+        <div>
+          <h3>2026年上半年毕业申请已经截止</h3>
+          <p>四川省2026年上半年毕业申请和前置学历验证提交时间为6月10日9:00至6月18日17:00。现在要做的是整理成绩、论文/实践、前置学历和材料，等下半年毕业申请通知。</p>
+        </div>
+        <a :href="officialUpdateLinks.graduation2026H1" target="_blank" rel="noopener">
+          <el-button type="primary" round>查看申请通告</el-button>
+        </a>
+      </el-card>
+
       <el-card class="graduation-major-panel" shadow="never">
         <div class="graduation-major-form">
           <div>
@@ -272,6 +282,7 @@ import { schoolMajorOfferings, schools } from '../js/schools'
 import SectionTitle from '../components/SectionTitle.vue'
 import PageHero from '../components/PageHero.vue'
 import ContactCard from '../components/ContactCard.vue'
+import { officialUpdateLinks } from '../js/officialUpdates'
 
 const selectedOfferingId = ref('')
 const offeringOptions = computed(() => (

@@ -17,8 +17,11 @@ export function analyzeMajorDifficulty(item) {
     return createPendingResult()
   }
 
-  const unifiedCourses = item.unifiedCourses || []
+  const planCourses = item.courses || []
   const schoolExamCourses = item.schoolExamCourses || []
+  const unifiedCourses = item.unifiedCourses?.length || schoolExamCourses.length
+    ? item.unifiedCourses || []
+    : planCourses
   const courses = [...unifiedCourses, ...schoolExamCourses]
 
   if (!courses.length) {

@@ -33,6 +33,16 @@
             <el-card shadow="never"><el-statistic title="合计学分" :value="plan.totalCredits || '待核对'" /></el-card>
           </div>
 
+          <el-alert
+            v-if="stoppedMajorNotice"
+            class="major-stop-alert"
+            :title="stoppedMajorNotice"
+            description="如果你是新生，不建议按这个专业继续规划；如果已经在籍，要尽快核对过渡期课程、论文和毕业申请时间。"
+            type="error"
+            show-icon
+            :closable="false"
+          />
+
           <el-card class="detail-block school-major-card" shadow="never">
             <div v-if="offerings.length" class="course-toolbar">
               <div>
@@ -65,6 +75,7 @@
                 </div>
                 <div class="school-offering-tags">
                   <template v-if="hasCoursePlan(selectedOffering)">
+                    <el-tag v-if="isStoppedMajor(selectedOffering)" type="danger" effect="dark" round>停考风险</el-tag>
                     <el-tag effect="plain" round>统考 {{ selectedOffering.unifiedCourseCount }}</el-tag>
                     <el-tag effect="plain" round>省考 {{ selectedOffering.schoolExamCourseCount }}</el-tag>
                   </template>
@@ -79,6 +90,16 @@
                 <div>
                   <span>论文费用</span>
                   <strong>{{ selectedOffering.thesisPriceText }}</strong>
+                </div>
+              </div>
+              <div class="major-source-status">
+                <div
+                  v-for="item in selectedDataStatus"
+                  :key="item.label"
+                  :class="['major-source-status-item', `is-${item.tone}`]"
+                >
+                  <span>{{ item.label }}</span>
+                  <strong>{{ item.value }}</strong>
                 </div>
               </div>
               <div v-if="getPolicyNotes(selectedOffering).length" class="exemption-note-list">
@@ -200,6 +221,7 @@
                     <p>{{ item.level }} · {{ item.name }} · 专业代码：{{ item.code || '待核对' }}</p>
                   </div>
                   <div class="school-offering-tags">
+                    <el-tag v-if="isStoppedMajor(item)" type="danger" effect="dark" round>停考风险</el-tag>
                     <template v-if="hasCoursePlan(item)">
                       <el-tag effect="plain" round>统考 {{ item.unifiedCourseCount }}</el-tag>
                       <el-tag effect="plain" round>省考 {{ item.schoolExamCourseCount }}</el-tag>
@@ -262,6 +284,7 @@ import { computed, ref, watchEffect } from 'vue'
 import { useRoute } from 'vue-router'
 import { courseRemarkClass, getCourseDisplayRemark, getPolicyNotes } from '../js/majorPolicyNotes'
 import { analyzeMajorDifficulty } from '../js/majorDifficulty'
+import { getStoppedMajorText, isStoppedMajor } from '../js/officialUpdates'
 import { getMajorPlanById } from '../js/sichuanMajorPlans'
 import { getMajorOfferingsByPlanId, getOfferingById, schoolMajorOfferings } from '../js/schools'
 
@@ -290,7 +313,9 @@ const offerings = computed(() => {
   })
 })
 const selectedOffering = computed(() => offerings.value.find((item) => item.id === selectedOfferingId.value))
-const difficultyResult = computed(() => analyzeMajorDifficulty(selectedOffering.value || fallbackOffering.value))
+const difficultyResult = computed(() => analyzeMajorDifficulty(selectedOffering.value || fallbackOffering.value || plan.value))
+const stoppedMajorNotice = computed(() => getStoppedMajorText(selectedOffering.value || fallbackOffering.value || plan.value))
+const selectedDataStatus = computed(() => buildDataStatus(selectedOffering.value))
 const visibleFeeOfferings = computed(() => {
   if (!selectedFeeSchoolId.value) {
     return offerings.value
@@ -341,5 +366,32 @@ function hasCoursePlan(item) {
 function parseTotalCredits(text) {
   const match = String(text || '').match(/合计\s*(\d+)\s*学分/)
   return match ? Number(match[1]) : ''
+}
+
+function buildDataStatus(item) {
+  if (!item) return []
+
+  return [
+    {
+      label: '课程计划',
+      value: hasCoursePlan(item) ? '已整理' : '待核对',
+      tone: hasCoursePlan(item) ? 'success' : 'warning',
+    },
+    {
+      label: '助学价格',
+      value: item.priceText && item.priceText !== '待核对' ? '已整理' : '待核对',
+      tone: item.priceText && item.priceText !== '待核对' ? 'success' : 'warning',
+    },
+    {
+      label: '论文费用',
+      value: item.level === '专科' ? '通常不涉及' : item.thesisPriceText && item.thesisPriceText !== '待核对' ? '已整理' : '待核对',
+      tone: item.level === '专科' || item.thesisPriceText && item.thesisPriceText !== '待核对' ? 'success' : 'warning',
+    },
+    {
+      label: '停考风险',
+      value: isStoppedMajor(item) ? '命中停考' : '未命中',
+      tone: isStoppedMajor(item) ? 'danger' : 'success',
+    },
+  ]
 }
 </script>

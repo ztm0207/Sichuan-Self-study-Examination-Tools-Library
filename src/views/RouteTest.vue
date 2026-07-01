@@ -148,6 +148,16 @@
           <p>不是只推一个专业。你可以先看哪条路线更符合自己的预算、时间和用途，再决定要不要找老师确认。</p>
         </div>
 
+        <el-card class="route-policy-card" shadow="never">
+          <div>
+            <span>当前官方节点</span>
+            <h3>这些时间点先记到脑壳里</h3>
+          </div>
+          <ul class="route-check-list">
+            <li v-for="item in routePolicyReminders" :key="item">{{ item }}</li>
+          </ul>
+        </el-card>
+
         <div class="planner-route-grid">
           <el-card v-for="route in planner.routes" :key="route.key" class="planner-route-card" shadow="hover">
             <div class="planner-route-top">
@@ -239,7 +249,9 @@ import { computed, reactive, ref } from 'vue'
 import PageHero from '../components/PageHero.vue'
 import ContactCard from '../components/ContactCard.vue'
 import { schoolMajorOfferings } from '../js/schools'
+import { getMajorPlanById } from '../js/sichuanMajorPlans'
 import { analyzeMajorDifficulty } from '../js/majorDifficulty'
+import { isStoppedMajor, routePolicyReminders } from '../js/officialUpdates'
 
 const EXAM_FEE_PER_COURSE = 35
 const UNCERTAIN = 'uncertain'
@@ -387,6 +399,7 @@ const lightConsultTips = [
   '你现在处在备考、论文、毕业还是学位阶段',
   '你的学校、专业、层次和当前剩余事项',
   '你最想要的是复习资料、时间规划还是材料清单',
+  '2026年下半年论文/实践报考已截止，毕业申请也要等下一批通知',
 ]
 
 function generateResult() {
@@ -469,6 +482,7 @@ function createPlannerResult(values) {
     nextActions: [
       '先从三条路线里选一个最接近自己的方向，不要一上来全都想要',
       '点进学校和专业详情，再核对课程数量、价格、论文费用和官网入口',
+      '已经备考的，要按2026年10月统考课表重新核本次能报哪些课程',
       '把测评结果发给老师，让老师确认当前学校、专业、费用和报名方式',
       '涉及包过、代考、保证拿证时间这类说法，不建议相信',
     ],
@@ -516,6 +530,7 @@ function createPreviewChecks(values, targetLevel) {
 
   return [
     `学校名单已按考试院 2026 年官方一览表核到 51 所；官方正文写 50 所，但表格逐行是 51 所。`,
+    '考试院已发布2026年10月统考课表，后面做复习和报考顺序要看最新课表。',
     `先按 ${targetLevel} 从数据里筛一遍，不把专科和专升本混着推。`,
     `再看 ${categoryText}，不确定就不强行卡死专业。`,
     `如果你选了意向学校，会先看 ${schoolText}。`,
@@ -526,6 +541,7 @@ function createPreviewChecks(values, targetLevel) {
 function createMatchSummary(levelOfferings, activeOfferings, candidates, values, targetLevel) {
   const priceReadyCount = activeOfferings.filter(hasReadyPrice).length
   const thesisMissingCount = activeOfferings.filter((item) => item.level === '专升本' && item.thesisPriceText === '待核对').length
+  const stoppedCount = activeOfferings.filter(isStoppedMajor).length
   const courseCounts = activeOfferings.map(getCourseCount).filter(Boolean)
   const unifiedCounts = activeOfferings.map((item) => item.unifiedCourseCount || 0).filter(Boolean)
   const categories = [...new Set(activeOfferings.map((item) => item.category).filter(Boolean))]
@@ -550,7 +566,9 @@ function createMatchSummary(levelOfferings, activeOfferings, candidates, values,
       usedFallback ? '你选的方向或学校暂时没有命中，结果先退回到目标层次全部数据里筛。' : '',
       thesisMissingCount ? `有 ${thesisMissingCount} 个组合论文/实践费用还要核，不能只看学费。` : '',
       priceReadyCount < activeOfferings.length ? `有 ${activeOfferings.length - priceReadyCount} 个组合学费还没完全核清，结果里会降权。` : '',
+      stoppedCount ? `有 ${stoppedCount} 个组合命中停考专业，测评会自动降权，新生不要直接报。` : '',
       candidates.some((item) => (item.difficulty.score || 3) >= 4) ? '部分专业课程压力偏高，怕数学、英语、实践课的人要单独看课程表。' : '',
+      '2026年10月课表已发布，正式报考前要去考试院核对当次课表。',
       '学校是否还能报、招生批次、论文要求和费用口径，最后还是要以学校当期通知为准。',
     ].filter(Boolean),
   }
@@ -620,12 +638,14 @@ function enrichOffering(item, values) {
   const targetScore = getTargetScore(item, values)
   const avoidPenalty = getAvoidPenalty(item, difficulty, values)
   const timePenalty = getTimePenalty(item, difficulty, values)
+  const stopped = isStoppedMajor(item)
 
   return {
     ...item,
     difficulty,
     courseCount,
     cost,
+    stopped,
     baseScore: targetScore - avoidPenalty - timePenalty,
   }
 }
@@ -667,18 +687,19 @@ function scoreByRoute(item, routeKey, values) {
   const costScore = item.cost.totalMid ? Math.max(0, 12000 - item.cost.totalMid) / 1000 : -3
   const fameScore = getSchoolScore(item.schoolName)
   const riskScore = item.priceText === '待核对' ? -3 : 0
+  const stoppedPenalty = item.stopped ? -80 : 0
   const priceReadyBoost = hasReadyPrice(item) && hasCostFocus(values, 'tuition') ? 2 : 0
   const thesisReadyBoost = item.thesisPriceText && item.thesisPriceText !== '待核对' && hasCostFocus(values, 'thesis') ? 1.5 : 0
 
   if (routeKey === 'fast') {
-    return item.baseScore + coursePressure * 1.4 + (6 - difficultyScore) * 3 + riskScore + priceReadyBoost + (values.learningMode === 'assisted' ? 2 : 0)
+    return item.baseScore + coursePressure * 1.4 + (6 - difficultyScore) * 3 + riskScore + stoppedPenalty + priceReadyBoost + (values.learningMode === 'assisted' ? 2 : 0)
   }
 
   if (routeKey === 'cheap') {
-    return item.baseScore + costScore * 2.2 + priceReadyBoost + thesisReadyBoost + (item.priceText === '待核对' ? -5 : 0) + (values.learningMode === 'self' ? 2 : 0)
+    return item.baseScore + costScore * 2.2 + stoppedPenalty + priceReadyBoost + thesisReadyBoost + (item.priceText === '待核对' ? -5 : 0) + (values.learningMode === 'self' ? 2 : 0)
   }
 
-  return item.baseScore + (6 - difficultyScore) * 2 + costScore + fameScore + riskScore + priceReadyBoost + thesisReadyBoost
+  return item.baseScore + (6 - difficultyScore) * 2 + costScore + fameScore + riskScore + stoppedPenalty + priceReadyBoost + thesisReadyBoost
 }
 
 function getTargetScore(item, values) {
@@ -889,6 +910,7 @@ function getRouteReasons(key, values, picks) {
 function getRouteRisks(key, values, picks) {
   const hasMissingPrice = picks.some((item) => item.priceText === '待核对')
   const hasHardMajor = picks.some((item) => (item.difficulty.score || 3) >= 4)
+  const hasStoppedMajor = picks.some((item) => item.stopped)
   const risks = []
 
   if (values.education === 'high-school' && values.target === 'undergraduate') {
@@ -897,6 +919,7 @@ function getRouteRisks(key, values, picks) {
 
   if (hasMissingPrice) risks.push('部分学校专业费用仍需核对，不能只按当前整理数据直接报名。')
   if (hasHardMajor) risks.push('路线中有偏难专业，数学、实践或专业课压力要提前看清。')
+  if (hasStoppedMajor) risks.push('这条路线里还有停考专业，只有存量在籍考生才适合继续核过渡安排，新生不要直接报。')
   if (key === 'cheap') risks.push('低成本路线更考验自律和信息搜集能力，流程要自己盯紧。')
   if (key === 'fast') risks.push('快不等于保证拿证，考试安排、通过率、论文和毕业申请都会影响周期。')
 
@@ -909,7 +932,7 @@ function uniqueList(items) {
 }
 
 function majorDetailPath(item) {
-  return `/majors/${item.planId || item.id}`
+  return `/majors/${getMajorPlanById(item.planId) ? item.planId : item.id}`
 }
 
 function majorComparePath(item) {

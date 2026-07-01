@@ -84,8 +84,15 @@
           <div v-if="form.examKind === 'unified'" class="study-schedule-box">
             <div class="study-schedule-head">
               <strong>{{ unifiedExamScheduleMeta.cycle }}统考时段参考</strong>
-              <span>以当次考试院公告为准</span>
+              <span>10月课表已发布，正式报考前要重新核对</span>
             </div>
+            <el-alert
+              class="study-slot-alert"
+              type="info"
+              show-icon
+              :closable="false"
+              title="当前内置时段仍按2026年4月课表辅助识别冲突；2026年10月课表已发布，最终以考试院10月课表为准。"
+            />
             <div v-if="selectedCourses.length" class="study-slot-list">
               <article
                 v-for="course in sortedSelectedCourses"
@@ -590,6 +597,7 @@ function buildAdvices(courses, pressure, examKind, offering, summary) {
     advices.push('省考按学校通知准备，重点确认考试平台、提交方式、准考证和考务时间。')
   } else {
     advices.push('统考科目优先排在精力好的时间段，考前按官方时段做一次模拟。')
+    advices.push('四川省2026年10月统考课表已经发布，本计划只做复习量参考，最终报考课程和时间以考试院当次课表为准。')
   }
 
   if (pressure.type === 'danger') {
