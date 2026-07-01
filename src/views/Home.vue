@@ -20,7 +20,7 @@
                   {{ homeHero.primaryAction.label }}
                 </el-button>
               </RouterLink>
-              <RouterLink :to="homeHero.secondaryAction.path">
+              <RouterLink v-if="homeHero.secondaryAction" :to="homeHero.secondaryAction.path">
                 <el-button size="large" round>
                   <el-icon><Money /></el-icon>
                   {{ homeHero.secondaryAction.label }}
@@ -30,11 +30,20 @@
             <div class="home-hero-points">
               <span v-for="point in homeHeroPoints" :key="point">{{ point }}</span>
             </div>
+            <div class="home-hero-trust">
+              <span v-for="item in homeTrustPoints" :key="item">{{ item }}</span>
+            </div>
           </div>
 
           <div class="home-hero-aside">
+            <div class="home-hero-problems">
+              <p class="overview-kicker">你现在可能卡在这几步</p>
+              <ul>
+                <li v-for="item in heroProblems" :key="item">{{ item }}</li>
+              </ul>
+            </div>
             <div class="home-hero-route">
-              <p class="overview-kicker">先把这三件事看清</p>
+              <p class="overview-kicker">从小红书过来，先这样走</p>
               <ol>
                 <li v-for="step in heroRouteSteps" :key="step">{{ step }}</li>
               </ol>
@@ -144,6 +153,7 @@
 
     <div class="container">
       <ContactCard
+        id="consult"
         title="学校、专业、费用拿不准，可以先发来一起筛"
         desc="适合刚开始了解四川小自考，还没确定学校、专业、预算和拿证节奏的人。"
       />
@@ -169,7 +179,15 @@ import ContactCard from '../components/ContactCard.vue'
 
 const homeHeroPoints = ['先测路线方向', '院校专业再核对', '费用和论文费分开看']
 
-const heroRouteSteps = ['测适合哪条路线', '查学校与专业', '核费用与考试节奏']
+const homeTrustPoints = ['不承诺包过', '不催着报名', '最终以官方和学校通知为准']
+
+const heroProblems = [
+  '不知道自己该走大自考还是小自考',
+  '学校和专业太多，不知道先看哪个',
+  '怕费用、论文、拿证时间后面才发现不对',
+]
+
+const heroRouteSteps = ['先测适合哪条路线', '再看学校专业费用', '最后加老师核一次']
 
 const heroQuickLinks = [
   { index: '01', label: '路线测评', path: '/route-test' },

@@ -17,9 +17,9 @@
         </div>
       </div>
       <div class="contact-wechat">
-        <span>添加微信咨询</span>
+        <span>人工核对路线</span>
         <strong>{{ contactInfo.wechat }}</strong>
-        <small>扫码添加，或直接搜索微信号。</small>
+        <small>扫码添加，或直接搜索微信号，把测评结果发来核一下。</small>
       </div>
     </div>
   </el-card>

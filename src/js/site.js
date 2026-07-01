@@ -12,23 +12,22 @@ export const navItems = [
 
 export const homeHero = {
   badge: '四川自考路线测评',
-  title: '四川自考不知道怎么选，先测一下',
-  titleLines: ['四川自考不知道怎么选', '先测一下'],
-  subtitle: '先用 30 秒筛一遍路线，再查学校、专业、费用、拿证时间和复习计划。',
-  note: '本站用于信息整理和辅助决策，学校、专业、费用及毕业要求请以官方最新通知为准。',
-  primaryAction: { label: '测我的自考路线', path: '/route-test' },
-  secondaryAction: { label: '先查学校', path: '/schools' },
+  title: '四川自考第一次报名，别先问学校',
+  titleLines: ['四川自考第一次报名', '别先问学校'],
+  subtitle: '先测你适合社会型还是应用型，3 分钟生成报名路线建议，再去看学校、专业、费用和拿证时间。',
+  note: '不承诺包过，也不催你报名。先帮你把大自考、小自考、专业、费用和拿证节奏想清楚。',
+  primaryAction: { label: '开始免费测评', path: '/route-test' },
 }
 
 export const homeDirectorySections = [
   {
     title: '路线测评',
     path: '/route-test',
-    intro: '先回答几个问题，初步判断你适合稳妥通关、快速拿证、低预算自学还是职业提升路线。',
+    intro: '先回答几个问题，初步判断你适合应用型、社会型、快速拿证、低预算还是稳妥路线。',
     items: [
-      { label: '7 个问题初筛', path: '/route-test' },
-      { label: '5 类路线结果', path: '/route-test' },
-      { label: '老师确认清单', path: '/route-test' },
+      { label: '11 个问题初筛', path: '/route-test' },
+      { label: '3 条路线对比', path: '/route-test' },
+      { label: '测完再核费用', path: '/route-test' },
     ],
   },
   {
@@ -110,13 +109,13 @@ export const homeDirectorySections = [
 ]
 
 export const contactInfo = {
-  title: '把情况说清楚，再帮你一起筛',
-  desc: '适合已经看过院校专业和费用，但还拿不准学校、专业、路径或拿证节奏的人。',
+  title: '测完还有拿不准的，再发来一起核',
+  desc: '适合已经有大概方向，但还怕学校、专业、费用、论文或拿证时间看错的人。',
   wechat: 'mystjy66',
   qrCode: `${import.meta.env.BASE_URL}wechat-qr.png`,
   tips: [
-    '你在四川哪个城市，是否已经有目标学校或专业',
-    '你的预算、学习时间，以及想走大自考还是小自考',
-    '你的主要目标：拿证、学位、考公考编、升职或转行',
+    '你的当前学历、想报专科还是专升本',
+    '你测出来的路线、目标学校或目标专业',
+    '你最担心的是费用、考试科目、论文、毕业还是学位',
   ],
 }

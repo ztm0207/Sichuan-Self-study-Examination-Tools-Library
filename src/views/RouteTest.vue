@@ -3,13 +3,12 @@
     <div class="container">
       <PageHero
         eyebrow="路线测评"
-        title="四川自考路线测评工具"
-        desc="不是只推荐一个专业，而是把你的学历、目标、预算、学习时间和现有学校专业费用数据放在一起，先算出最快、最省、最稳三条参考路线。"
+        title="四川自考路线测评"
+        desc="第一次报名，先判断你适合社会型还是应用型。测完先给半份路线报告，再决定要不要人工核对学校、专业、费用和拿证时间。"
         :actions="[
-          { label: '开始测评', path: '/route-test', type: 'primary' },
-          { label: '先查费用表', path: '/prices' },
+          { label: '开始免费测评', path: '/route-test', type: 'primary' },
         ]"
-        :points="['先判断能不能报', '再匹配学校专业', '最后算费用和周期']"
+        :points="['8 个问题初筛', '生成半份路线报告', '测完再人工核对']"
       />
 
       <div class="stat-strip route-data-strip">
@@ -23,7 +22,7 @@
           <div class="route-test-head">
             <span>{{ routeQuestionCount }} 个问题</span>
             <h2>先把你的情况摆出来</h2>
-            <p>先把学历、目标、预算、学习时间、专业方向和意向学校说清楚，后面才好拿真实专业数据去筛，不然就是瞎推荐。</p>
+            <p>别一上来就问哪个学校好。先把学历、目标、预算、学习时间和专业方向说清楚，后面才好拿真实专业数据去筛，不然就是瞎推荐。</p>
           </div>
 
           <el-form label-position="top" class="route-test-form">
@@ -76,6 +75,12 @@
             <h2>{{ planner.profile.title }}</h2>
             <p class="route-result-summary">{{ planner.profile.summary }}</p>
 
+            <div class="route-half-report">
+              <span>你的初步路线</span>
+              <h3>{{ planner.primaryReport.title }}</h3>
+              <p>{{ planner.primaryReport.desc }}</p>
+            </div>
+
             <div class="route-result-grid">
               <div>
                 <span>目标层次</span>
@@ -96,9 +101,16 @@
             </div>
 
             <div class="route-result-section">
-              <h3>本次是按这些数据筛的</h3>
+              <h3>判断原因</h3>
               <ul class="route-check-list">
-                <li v-for="item in planner.matchSummary.basis" :key="item">{{ item }}</li>
+                <li v-for="item in planner.primaryReport.reasons" :key="item">{{ item }}</li>
+              </ul>
+            </div>
+
+            <div class="route-result-section">
+              <h3>接下来还需要核对</h3>
+              <ul class="route-check-list">
+                <li v-for="item in planner.confirmItems" :key="item">{{ item }}</li>
               </ul>
             </div>
 
@@ -224,6 +236,14 @@
           </ul>
         </el-card>
 
+        <ContactCard
+          id="consult"
+          class="route-result-contact"
+          kicker="人工核对路线"
+          title="你的路线已经出来了，下一步就核这几个细节"
+          desc="如果你已经看到推荐路线，但还拿不准学校、专业、费用、论文或拿证时间，可以把测评结果发来核一次。不是一加就追着你报名，有需要再问。"
+          :tips="resultConsultTips"
+        />
       </template>
 
       <el-card class="route-note-card" shadow="never">
@@ -235,6 +255,8 @@
       </el-card>
 
       <ContactCard
+        v-if="!hasResult"
+        id="consult"
         kicker="轻咨询入口"
         title="不知道该准备哪些资料，可以先说你的阶段"
         desc="适合已经确定专业或正在备考，但不知道复习资料、论文材料、毕业学位材料怎么整理的人。"
@@ -257,12 +279,10 @@ const EXAM_FEE_PER_COURSE = 35
 const UNCERTAIN = 'uncertain'
 
 const categoryOptions = createCategoryOptions()
-const schoolOptions = createSchoolOptions()
-
 const questions = [
   {
     key: 'purpose',
-    label: '你自考主要为了什么？',
+    label: '你这次自考主要为了什么？',
     options: [
       { label: '快速拿证', value: 'certificate' },
       { label: '考公/考编/考证', value: 'exam' },
@@ -283,6 +303,15 @@ const questions = [
     ],
   },
   {
+    key: 'firstApply',
+    label: '你是不是第一次了解四川自考？',
+    options: [
+      { label: '第一次，很多都还不清楚', value: 'yes' },
+      { label: '了解过一点，但还没报名', value: 'some' },
+      { label: '已经报名/正在备考', value: 'no' },
+    ],
+  },
+  {
     key: 'target',
     label: '你想报哪个层次？',
     options: [
@@ -293,7 +322,7 @@ const questions = [
   },
   {
     key: 'studyTime',
-    label: '你每天能学习多久？',
+    label: '你每天大概能学多久？',
     type: 'number',
     min: 0.5,
     max: 8,
@@ -313,62 +342,23 @@ const questions = [
     ],
   },
   {
-    key: 'learningMode',
-    label: '你能接受哪种方式？',
-    options: [
-      { label: '完全自学，便宜但靠自己', value: 'self' },
-      { label: '学校助学，贵点但有人带', value: 'assisted' },
-      { label: '不确定，想对比', value: 'compare' },
-    ],
-  },
-  {
     key: 'categoryPreferences',
-    label: '专业方向有没有倾向？',
+    label: '有没有目标专业方向？',
     multiple: true,
     options: categoryOptions,
   },
   {
-    key: 'schoolPreferences',
-    label: '有没有意向学校？',
-    multiple: true,
-    filterable: true,
-    options: schoolOptions,
-  },
-  {
-    key: 'avoidSubject',
-    label: '你怕哪些科目？',
-    multiple: true,
-    options: [
-      { label: '数学', value: 'math' },
-      { label: '英语', value: 'english' },
-      { label: '计算机', value: 'computer' },
-      { label: '写作/论文', value: 'writing' },
-      { label: '都还行', value: 'none' },
-    ],
-  },
-  {
-    key: 'costFocus',
-    label: '费用最想先核哪一块？',
-    multiple: true,
-    options: [
-      { label: '助学费/学费', value: 'tuition' },
-      { label: '报考费', value: 'exam-fee' },
-      { label: '论文/实践费用', value: 'thesis' },
-      { label: '教材资料费', value: 'material' },
-      { label: '都想核清楚', value: 'all' },
-    ],
-  },
-  {
     key: 'priority',
-    label: '你更想要什么结果？',
+    label: '你更看重什么？',
     multiple: true,
     options: [
       { label: '最快考完', value: 'fastest' },
       { label: '最便宜', value: 'cheapest' },
       { label: '最稳妥', value: 'steady' },
+      { label: '考公/考编更适合', value: 'exam' },
       { label: '专业好就业', value: 'career' },
       { label: '学校名气好', value: 'school' },
-      { label: '难度低', value: 'easy' },
+      { label: '统考少/难度低', value: 'easy' },
     ],
   },
 ]
@@ -376,6 +366,7 @@ const questions = [
 function createDefaultForm() {
   return {
     purpose: 'degree',
+    firstApply: 'yes',
     education: 'college',
     target: 'undergraduate',
     studyTime: 1,
@@ -383,8 +374,8 @@ function createDefaultForm() {
     learningMode: 'compare',
     categoryPreferences: [UNCERTAIN],
     schoolPreferences: [UNCERTAIN],
-    avoidSubject: ['math'],
-    costFocus: ['tuition', 'thesis'],
+    avoidSubject: [],
+    costFocus: ['all'],
     priority: ['steady'],
   }
 }
@@ -400,6 +391,12 @@ const lightConsultTips = [
   '你的学校、专业、层次和当前剩余事项',
   '你最想要的是复习资料、时间规划还是材料清单',
   '2026年下半年论文/实践报考已截止，毕业申请也要等下一批通知',
+]
+
+const resultConsultTips = [
+  '把测评结果截图或推荐路线发来',
+  '重点核学校、专业、助学费、论文费和拿证时间',
+  '如果目标是考公、考编、学位或考研，要单独看专业和学位条件',
 ]
 
 function generateResult() {
@@ -462,23 +459,20 @@ function createPlannerResult(values) {
   const candidates = activeOfferings
     .map((item) => enrichOffering(item, values))
   const matchSummary = createMatchSummary(levelOfferings, activeOfferings, candidates, values, targetLevel)
+  const routes = [
+    createRoute('fast', '路线 A', '最快拿证型', '优先看课程压力、统考数量和可规划节奏，适合想尽快跑完流程的人。', candidates, values),
+    createRoute('cheap', '路线 B', '低成本对比型', '优先看费用更低、风险更清楚的组合。预算很低时，也建议同时核对社会型自学路径。', candidates, values),
+    createRoute('steady', '路线 C', '稳妥均衡型', '在难度、费用、学校和用途之间取一个相对稳的方案，适合大多数第一次了解的人。', candidates, values),
+  ]
 
   return {
     profile,
     dataStats: createDataStats(),
     previewChecks: createPreviewChecks(values, targetLevel),
     matchSummary,
-    routes: [
-      createRoute('fast', '路线 A', '最快拿证型', '优先看课程压力、统考数量和可规划节奏，适合想尽快跑完流程的人。', candidates, values),
-      createRoute('cheap', '路线 B', '低成本对比型', '优先看费用更低、风险更清楚的组合。预算很低时，也建议同时核对社会型自学路径。', candidates, values),
-      createRoute('steady', '路线 C', '稳妥均衡型', '在难度、费用、学校和用途之间取一个相对稳的方案，适合大多数第一次了解的人。', candidates, values),
-    ],
-    confirmItems: [
-      '你当前学历是否适合直接报目标层次，专升本毕业前置学历怎么核',
-      '这几个学校和专业当前是否还在可报范围内',
-      '助学费、报考费、资料费、论文/实践费用分别怎么算',
-      '最近一次统考/省考建议先报哪几科，后面怎么排',
-    ],
+    routes,
+    primaryReport: createPrimaryReport(values, profile, targetLevel, routes),
+    confirmItems: createConfirmItems(values, targetLevel),
     nextActions: [
       '先从三条路线里选一个最接近自己的方向，不要一上来全都想要',
       '点进学校和专业详情，再核对课程数量、价格、论文费用和官网入口',
@@ -572,6 +566,62 @@ function createMatchSummary(levelOfferings, activeOfferings, candidates, values,
       '学校是否还能报、招生批次、论文要求和费用口径，最后还是要以学校当期通知为准。',
     ].filter(Boolean),
   }
+}
+
+function createPrimaryReport(values, profile, targetLevel, routes) {
+  const assistedLean = values.learningMode === 'assisted' || values.firstApply === 'yes' || getStudyHours(values) <= 1
+  const cheapLean = values.learningMode === 'self' || values.budget === 'lowest' || values.budget === 'under-3000' || hasPriority(values, 'cheapest')
+  const firstPick = routes.find((route) => route.key === 'steady')?.picks?.[0] || routes[0]?.picks?.[0]
+  const title = cheapLean
+    ? '建议先把社会型和应用型放一起对比'
+    : assistedLean
+      ? '更适合先按应用型小自考路线核对'
+      : '适合先按稳妥路线筛学校和专业'
+
+  return {
+    title,
+    desc: firstPick
+      ? `当前可以先拿 ${firstPick.schoolName} ${firstPick.name} 做参考底稿，再去核学校是否可报、费用口径和考试节奏。`
+      : '当前先按你的目标层次做初步判断，具体学校和专业还需要继续核。',
+    reasons: [
+      `目标层次先按 ${targetLevel} 处理，不把专科和专升本混在一起推荐。`,
+      getFirstApplyReason(values),
+      getBudgetReason(values),
+      getPriorityReason(values),
+      profile.eligibility,
+    ].filter(Boolean),
+  }
+}
+
+function createConfirmItems(values, targetLevel) {
+  return [
+    `当前学历是否适合直接走 ${targetLevel}，专升本要重点核前置学历。`,
+    '当前批次到底哪些学校、哪些专业还能报，不要只看旧截图。',
+    '助学费、报考费、资料费、论文/实践费用分别是多少。',
+    '最近一次统考/省考建议先报哪几科，有没有同场冲突。',
+    hasPriority(values, 'exam') ? '如果后面想考公考编，要单独核专业名称和岗位限制。' : '',
+  ].filter(Boolean)
+}
+
+function getFirstApplyReason(values) {
+  if (values.firstApply === 'yes') return '你是第一次了解，先做路线判断比直接问学校更稳，不然容易听别人推荐什么就报什么。'
+  if (values.firstApply === 'some') return '你已经了解过一点，但还没报名，重点是把费用、考试科目和毕业时间核清楚。'
+  return '你已经报名或正在备考，重点不是重新选一遍，而是核剩余科目、论文和毕业节奏。'
+}
+
+function getBudgetReason(values) {
+  if (values.budget === 'lowest' || values.budget === 'under-3000') return '你的预算偏低，要把社会型自学和应用型助学费用放一起算。'
+  if (values.budget === 'over-10000') return '你的预算空间相对大，但也不能只听贵的，还是要看专业和服务是否匹配。'
+  return '你的预算处在常见区间，重点看学费、论文费、报考费和资料费有没有拆清楚。'
+}
+
+function getPriorityReason(values) {
+  if (hasPriority(values, 'fastest')) return '你更看重速度，要优先核课程安排、考试批次、论文和毕业申请窗口。'
+  if (hasPriority(values, 'cheapest')) return '你更看重省钱，要接受自己多查通知、多盯流程，不能只看低价。'
+  if (hasPriority(values, 'exam')) return '你有考公/考编倾向，专业名称和岗位匹配比学校名气更重要。'
+  if (hasPriority(values, 'school')) return '你看重学校名气，但自考最终还要看专业计划、费用和毕业学位要求。'
+  if (hasPriority(values, 'easy')) return '你想难度低，就要重点避开统考压力大、数学英语实践课多的组合。'
+  return '你更看重稳妥，适合先选费用清楚、课程压力适中、流程能跟上的组合。'
 }
 
 function resolveTargetLevel(values) {
@@ -706,7 +756,7 @@ function getTargetScore(item, values) {
   const text = `${item.name}${item.category || ''}`
   let score = 10
 
-  if (values.purpose === 'exam') {
+  if (values.purpose === 'exam' || hasPriority(values, 'exam')) {
     if (/行政|汉语言|法学|教育|思想政治|社会工作/.test(text)) score += 8
     if (/计算机|工程|机械|电气|土木/.test(text)) score -= 3
   }
